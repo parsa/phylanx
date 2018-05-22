@@ -33,9 +33,9 @@ namespace phylanx { namespace execution_tree { namespace primitives
     /**/
 
     std::vector<match_pattern_type> const linear_solver::match_data = {
-        PHYLANX_LIN_MATCH_DATA("LinSolv_LU"),
-        PHYLANX_LIN_MATCH_DATA("LinSolv_LDLT_U"),
-        PHYLANX_LIN_MATCH_DATA("LinSolv_LDLT_L")};
+        PHYLANX_LIN_MATCH_DATA("linear_solver_lu"),
+        PHYLANX_LIN_MATCH_DATA("linear_solver_ldlt_u"),
+        PHYLANX_LIN_MATCH_DATA("linear_solver_ldlt_l")};
 
 #undef PHYLANX_LIN_MATCH_DATA
 
@@ -44,7 +44,7 @@ namespace phylanx { namespace execution_tree { namespace primitives
         std::string const& name) const
     {
         static std::map<std::string, vector_function_ptr> lin_solver = {
-            {"LinSolv_LU",
+            {"linear_solver_lu",
                 [](args_type&& args) -> arg_type {
                     storage2d_type A{blaze::trans(args[0].matrix())};
                     storage1d_type b{args[1].vector()};
@@ -52,7 +52,7 @@ namespace phylanx { namespace execution_tree { namespace primitives
                     blaze::gesv(A, b, ipiv.get());
                     return arg_type{std::move(b)};
                 }},
-            {"LinSolv_LDLT_U",
+            {"linear_solver_ldlt_u",
                 [](args_type&& args) -> arg_type {
                     storage2d_type A{blaze::trans(args[0].matrix())};
                     storage1d_type b{args[1].vector()};
@@ -60,7 +60,7 @@ namespace phylanx { namespace execution_tree { namespace primitives
                     blaze::sysv(A, b, 'U', ipiv.get());
                     return arg_type{std::move(b)};
                 }},
-            {"LinSolv_LDLT_L", [](args_type&& args) -> arg_type {
+            {"linear_solver_ldlt_l", [](args_type&& args) -> arg_type {
                  storage2d_type A{blaze::trans(args[0].matrix())};
                  storage1d_type b{args[1].vector()};
                  const std::unique_ptr<int[]> ipiv(new int[b.size()]);

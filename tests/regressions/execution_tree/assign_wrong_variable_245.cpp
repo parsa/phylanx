@@ -268,9 +268,9 @@ std::string const linear_solver_code = R"(define(test, block(
     define(A, [[2,1],[1,-3]]),
     define(b, [4, -5]),
     define(R, true),
-    define(Result, LinSolv_LU(A, b)),
-    store(Result, LinSolv_LDLT_U(A, b)),
-    store(Result, LinSolv_LDLT_L(A, b)),
+    define(Result, linear_solver_lu(A, b)),
+    store(Result, linear_solver_ldlt_l(A, b)),
+    store(Result, linear_solver_ldlt_u(A, b)),
     if((any(A!=[[2,1],[1,-3]]) || any(b!=[4, -5])), store(R,false)),
     R))
 )";
