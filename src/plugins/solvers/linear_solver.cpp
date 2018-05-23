@@ -35,7 +35,9 @@ namespace phylanx { namespace execution_tree { namespace primitives
     std::vector<match_pattern_type> const linear_solver::match_data = {
         PHYLANX_LIN_MATCH_DATA("linear_solver_lu"),
         PHYLANX_LIN_MATCH_DATA("linear_solver_ldlt_u"),
-        PHYLANX_LIN_MATCH_DATA("linear_solver_ldlt_l")};
+        PHYLANX_LIN_MATCH_DATA("linear_solver_ldlt_l"),
+        PHYLANX_LIN_MATCH_DATA("linear_solver_cholesky_u"),
+        PHYLANX_LIN_MATCH_DATA("linear_solver_cholesky_l")};
 
 #undef PHYLANX_LIN_MATCH_DATA
 
@@ -66,7 +68,19 @@ namespace phylanx { namespace execution_tree { namespace primitives
                  const std::unique_ptr<int[]> ipiv(new int[b.size()]);
                  blaze::sysv(A, b, 'L', ipiv.get());
                  return arg_type{std::move(b)};
-             }}};
+                }},
+            {"linear_solver_cholesky_u", [](args_type&& args) -> arg_type {
+                storage2d_type A{blaze::trans(args[0].matrix())};
+                storage1d_type b{args[1].vector()};
+                blaze::posv(A, b, 'U');
+                return arg_type{std::move(b)};
+                }},
+            {"linear_solver_cholesky_l", [](args_type&& args) -> arg_type {
+                storage2d_type A{blaze::trans(args[0].matrix())};
+                storage1d_type b{args[1].vector()};
+                blaze::posv(A, b, 'L');
+                return arg_type{std::move(b)};
+                }}};
         return lin_solver[name];
     }
 

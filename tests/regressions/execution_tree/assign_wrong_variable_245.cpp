@@ -271,6 +271,8 @@ std::string const linear_solver_code = R"(define(test, block(
     define(Result, linear_solver_lu(A, b)),
     store(Result, linear_solver_ldlt_l(A, b)),
     store(Result, linear_solver_ldlt_u(A, b)),
+    store(Result, linear_solver_cholesky_l(A, b)),
+    store(Result, linear_solver_cholesky_u(A, b)),
     if((any(A!=[[2,1],[1,-3]]) || any(b!=[4, -5])), store(R,false)),
     R))
 )";

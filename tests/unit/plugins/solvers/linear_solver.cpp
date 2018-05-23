@@ -71,6 +71,36 @@ void test_linear_solver_ldlt_l_PhySL()
         phylanx::ir::node_data<double>(blaze::DynamicVector<double>{1, 2, 3}));
 }
 
+void test_linear_solver_cholesky_l_PhySL()
+{
+    std::string const code = R"(block(
+        define(a, [[2,-1,0],[-1,2,-1],[0,-1,1]]),
+        define(b, [0, 0, 1]),
+        linear_solver_cholesky_l(a, b))
+    )";
+
+    auto result =
+        phylanx::execution_tree::extract_numeric_value(compile(code)());
+
+    HPX_TEST_EQ(result,
+        phylanx::ir::node_data<double>(blaze::DynamicVector<double>{1, 2, 3}));
+}
+
+void test_linear_solver_cholesky_u_PhySL()
+{
+    std::string const code = R"(block(
+        define(a, [[2,-1,0],[-1,2,-1],[0,-1,1]]),
+        define(b, [0, 0, 1]),
+        linear_solver_cholesky_u(a, b))
+    )";
+
+    auto result =
+        phylanx::execution_tree::extract_numeric_value(compile(code)());
+
+    HPX_TEST_EQ(result,
+        phylanx::ir::node_data<double>(blaze::DynamicVector<double>{1, 2, 3}));
+}
+
 void test_linear_solver_lu(std::string const& func_name)
 {
     phylanx::execution_tree::primitive lhs =
@@ -96,7 +126,7 @@ void test_linear_solver_lu(std::string const& func_name)
         phylanx::ir::node_data<double>(blaze::DynamicVector<double>{1, 2, 3}));
 }
 
-void test_linear_solver_ldlt(std::string const& func_name)
+void test_linear_solver(std::string const& func_name)
 {
     phylanx::execution_tree::primitive lhs =
         phylanx::execution_tree::primitives::create_variable(hpx::find_here(),
@@ -126,10 +156,15 @@ int main()
     test_linear_solver_lu_PhySL();
     test_linear_solver_ldlt_u_PhySL();
     test_linear_solver_ldlt_l_PhySL();
+    test_linear_solver_cholesky_u_PhySL();
+    test_linear_solver_cholesky_l_PhySL();
 
     test_linear_solver_lu("linear_solver_lu");
-    test_linear_solver_ldlt("linear_solver_ldlt_u");
-    test_linear_solver_ldlt("linear_solver_ldlt_l");
+    test_linear_solver("linear_solver_ldlt_u");
+    test_linear_solver("linear_solver_ldlt_l");
+    test_linear_solver("linear_solver_cholesky_l");
+    test_linear_solver("linear_solver_cholesky_u");
+
 
     return hpx::util::report_errors();
 }
